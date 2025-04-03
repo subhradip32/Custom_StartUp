@@ -30,7 +30,7 @@ class Authentication:
                     with open(self.filepath, "wb") as file:
                         pk.dump(data, file)
                     
-                    self.main_window.update_ui(username)  # Update main window
+                    self.main_window.show_main(username = username)  # Update main window
                     self.auth_window.destroy()  
                     return True
                 else:
@@ -42,7 +42,7 @@ class Authentication:
                 with open(self.filepath, "wb") as file:
                     pk.dump(data, file)
                 lbl.configure(text=f"New account created for {username}", text_color="yellow")
-                self.main_window.update_ui(username)  # Update main window
+                self.main_window.show_main()  # Update main window
                 self.auth_window.destroy()  
                 return True
 

@@ -4,6 +4,7 @@ from customtkinter import filedialog
 from authentication import auth
 import pickle as pk
 import os
+from tkinter import PhotoImage
 
 # Global values
 AUTH_FILEPATH = "./auth.data"
@@ -173,9 +174,10 @@ class App(customtkinter.CTk):
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
         self.geometry("500x700")
+        self.iconbitmap("Assets/START.ico")
         customtkinter.set_appearance_mode("System")  
         customtkinter.set_default_color_theme("blue")
-        self.title("Custom Startup")
+        self.title("START")
 
         self.AuthWindow = None
         self.current_user, self.logged_in = is_user_already_loggedin()

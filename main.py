@@ -1,4 +1,5 @@
 import customtkinter
+import tkinter as tk
 from customtkinter import filedialog
 from authentication import auth
 import pickle as pk
@@ -29,6 +30,49 @@ def is_user_already_loggedin():
             return last_logged_user, False 
 
     return None, False  
+
+
+class CTkToolTip:
+    def __init__(self, widget, text, delay=500):
+        self.widget = widget
+        self.text = text
+        self.delay = delay
+        self.tipwindow = None
+        self.id = None
+
+        self.widget.bind("<Enter>", self.schedule)
+        self.widget.bind("<Leave>", self.hide_tip)
+        self.widget.bind("<ButtonPress>", self.hide_tip)
+
+    def schedule(self, event=None):
+        self.unschedule()
+        self.id = self.widget.after(self.delay, self.show_tip)
+
+    def unschedule(self):
+        id_ = self.id
+        self.id = None
+        if id_:
+            self.widget.after_cancel(id_)
+
+    def show_tip(self, event=None):
+        if self.tipwindow or not self.text:
+            return
+        x = self.widget.winfo_rootx() + 40
+        y = self.widget.winfo_rooty() + 20
+
+        self.tipwindow = tw = tk.Toplevel(self.widget)
+        tw.wm_overrideredirect(True)
+        tw.wm_geometry(f"+{x}+{y}")
+        label = tk.Label(tw, text=self.text, background="#ffffe0", relief="solid", borderwidth=1,
+                         font=("tahoma", "9", "normal"))
+        label.pack(ipadx=4, ipady=2)
+
+    def hide_tip(self, event=None):
+        self.unschedule()
+        if self.tipwindow:
+            self.tipwindow.destroy()
+            self.tipwindow = None
+
 
 
 class Utility: 
@@ -107,6 +151,20 @@ class Utility:
             self.code_area.insert("end", "echo \"Write a message you want to display\"\n")
             self.text_status(self.status_lbl)
 
+    def add_start(self): 
+        if self.code_area:
+            self.code_area.insert("end", "start \"\" \"Absolute location of exe file\"\n")
+            self.text_status(self.status_lbl)
+
+    def add_pause(self): 
+        if self.code_area:
+            self.code_area.insert("end", "pause\n")
+            self.text_status(self.status_lbl)
+
+    def add_exit(self):
+        if self.code_area:
+            self.code_area.insert("end", "exit\n")
+            self.text_status(self.status_lbl) 
     
 
 
@@ -124,7 +182,7 @@ class App(customtkinter.CTk):
         self.main_frame1 = None 
         self.main_frame2 = None
         self.script_textbox = None  
-        self.util = None  # Initialize as None first
+        self.util = None  
 
         self.label = customtkinter.CTkLabel(self, text="", font=("Arial", 18, "bold"))
         
@@ -218,15 +276,32 @@ class App(customtkinter.CTk):
 
         # Buttons inside main_frame2
         self.save_btn = customtkinter.CTkButton(self.main_frame2, fg_color="green", hover_color="dark green",
-                                                command=self.util.save_as, text="Save As")
-        self.save_btn.pack(side="top", padx=5, pady=5)
+                              command=self.util.save_as, text="Save As")
+        self.save_btn.pack(side="top", padx=10, pady=5)
+        CTkToolTip(self.save_btn, "Save your current file")
 
         self.open_btn = customtkinter.CTkButton(self.main_frame2, fg_color="green", hover_color="dark green", 
-                                                command=self.util.open_file,text="Open")
-        self.open_btn.pack(side="top", padx=5, pady=5)
+                                    command=self.util.open_file, text="Open")
+        self.open_btn.pack(side="top", padx=10, pady=(5, 20))
+        CTkToolTip(self.open_btn, "Open an existing file")
 
         self.cmd_echo_btn = customtkinter.CTkButton(self.main_frame2, text="Echo", command=self.util.add_echo)
-        self.cmd_echo_btn.pack(side="top", padx=10, pady=15)
+        self.cmd_echo_btn.pack(side="top", padx=10, pady=5)
+        CTkToolTip(self.cmd_echo_btn, "Insert an echo command")
+
+        self.cmd_start_btn = customtkinter.CTkButton(self.main_frame2, text="Start App", command=self.util.add_start)
+        self.cmd_start_btn.pack(side="top", padx=10, pady=5)
+        CTkToolTip(self.cmd_start_btn, "Start the app")
+
+        self.cmd_pause_btn = customtkinter.CTkButton(self.main_frame2, text="Pause", command=self.util.add_pause)
+        self.cmd_pause_btn.pack(side="top", padx=10, pady=5)
+        CTkToolTip(self.cmd_pause_btn, "Pause the app")
+
+        self.cmd_exit_btn = customtkinter.CTkButton(self.main_frame2, text="Exit", command=self.util.add_exit)
+        self.cmd_exit_btn.pack(side="top", padx=10, pady=5)
+        CTkToolTip(self.cmd_exit_btn, "Exit the cmd")
+
+
 
         self.clear_btn = customtkinter.CTkButton(self.main_frame2, fg_color="red", hover_color="dark red", 
                                                 command=self.util.clear_text,text="Clear")
@@ -239,10 +314,9 @@ class App(customtkinter.CTk):
         self.work_display = customtkinter.CTkLabel(self.last_frame, text="")
         self.work_display.pack(side="right")
         self.util.text_status(self.work_display)
-        # self.script_textbox.bind("<KeyRelease>", self.util.text_status(self.work_display)) 
+        
+
         self.script_textbox.bind("<KeyRelease>", lambda event: self.util.text_status(self.work_display))
-
-
 
         self.update_ui(self.current_user)
             

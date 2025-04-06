@@ -34,6 +34,7 @@ def is_user_already_loggedin():
 
 
 class CTkToolTip:
+    '''This class is used to show a little helpbox for the user'''
     def __init__(self, widget, text, delay=500):
         self.widget = widget
         self.text = text
@@ -86,6 +87,7 @@ class Utility:
         self.load_previous_data()
 
     def store_data_on_window_close(self):
+        '''This function is called when ever the main window is closed.'''
         if self.code_area and self.code_area.winfo_exists():  # Check if widget exists
             data = self.code_area.get("1.0", "end-1c")
             os.makedirs(BASH_FILEPATH, exist_ok=True)
@@ -93,6 +95,7 @@ class Utility:
                 pk.dump(data, file)
 
     def load_previous_data(self):
+        '''This function loads the previous data from the global directory.'''
         if os.path.exists(self.filepath):
             try:
                 with open(self.filepath, "rb") as file:
@@ -104,11 +107,13 @@ class Utility:
                 pass
     
     def clear_text(self):
+        '''clean the text area.'''
         if self.code_area: 
             self.code_area.delete("1.0",customtkinter.END)
             self.text_status(self.status_lbl)
 
     def open_file(self):
+        '''Open the file. and load the text.'''
         if self.code_area: 
             self.code_area.delete("1.0",customtkinter.END)
             bat_file = filedialog.askopenfilename(
@@ -121,6 +126,7 @@ class Utility:
             self.text_status(self.status_lbl)
 
     def save_as(self):
+        '''Save the text in a bat file.'''
         if self.code_area:
             bat_path = filedialog.asksaveasfilename(defaultextension=".bat",
                                                     filetypes=[("Batch Files", "*.bat")])
@@ -148,21 +154,25 @@ class Utility:
         
 
     def add_echo(self): 
+        '''Providing the echo functionality.'''
         if self.code_area:
             self.code_area.insert("end", "echo \"Write a message you want to display\"\n")
             self.text_status(self.status_lbl)
 
     def add_start(self): 
+        '''Providing the start functionality.'''
         if self.code_area:
             self.code_area.insert("end", "start \"\" \"Absolute location of exe file\"\n")
             self.text_status(self.status_lbl)
 
     def add_pause(self): 
+        '''Providing the pause functionality.'''
         if self.code_area:
             self.code_area.insert("end", "pause\n")
             self.text_status(self.status_lbl)
 
     def add_exit(self):
+        '''Providing the exit functionality.'''
         if self.code_area:
             self.code_area.insert("end", "exit\n")
             self.text_status(self.status_lbl) 
@@ -171,6 +181,7 @@ class Utility:
 
 # Basic GUI setup
 class App(customtkinter.CTk):
+    '''Creating the main window.'''
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
         self.geometry("500x700")
@@ -317,7 +328,7 @@ class App(customtkinter.CTk):
         self.work_display.pack(side="right")
         self.util.text_status(self.work_display)
         
-
+        # It will update the text bar every time the key is pressed. 
         self.script_textbox.bind("<KeyRelease>", lambda event: self.util.text_status(self.work_display))
 
         self.update_ui(self.current_user)

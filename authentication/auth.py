@@ -69,6 +69,7 @@ class AuthWindow(customtkinter.CTkToplevel):
         self.geometry("400x300")
         self.title("Authentication")
         self.resizable(False, False)
+        self.iconbitmap("Assets/START.ico")
 
         self.grid_columnconfigure(0, weight=1)
         

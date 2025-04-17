@@ -197,7 +197,8 @@ class App(customtkinter.CTk):
         self.script_textbox = None  
         self.util = None  
 
-        self.label = customtkinter.CTkLabel(self, text="", font=("Arial", 18, "bold"))
+        self.welcome_label = customtkinter.CTkLabel(self, text="Welcome! Please log in.", font=("Arial", 18, "bold"))
+        self.welcome_label.pack(side = "top", pady = 10)
         
 
         if self.logged_in:
@@ -216,35 +217,51 @@ class App(customtkinter.CTk):
 
     def show_login_button(self):
         """Display the login button when no user is logged in."""
-        self.label.configure(text="Welcome! Please log in.")
+
+        if self.welcome_label: 
+            self.welcome_label.configure(text="Welcome! Please log in.")
+        else:
+            print("error")
+            self.welcome_label = customtkinter.CTkLabel(self, text = "Welcome! Please log in.")
+        
+        
         self.button_1 = customtkinter.CTkButton(self, text="Login", command=self.open_toplevel)
         self.button_1.pack(pady=20)
-    
+
     def logout_user(self):
-        self.util.store_data_on_window_close()
+        if self.util:
+            self.util.store_data_on_window_close()
 
-        self.AuthWindow = None
-        self.current_user, self.logged_in = "", False 
-        if hasattr(self, "button_2"):  
-            self.button_2.pack_forget()
-
-        self.label = customtkinter.CTkLabel(self, text="Welcome! Please log in.", font=("Arial", 18, "bold"))
-        self.label.pack(pady=20)
-
-        if self.main_frame1:
-            self.main_frame1.destroy()
-        if self.main_frame2:
-            self.main_frame2.destroy()
-
+        # Completely destroy all main widgets
+        if hasattr(self, "main_container"):
+            self.main_container.destroy()
+        if hasattr(self, "last_frame"):
+            self.last_frame.destroy()
+        
+        # Reset user state
+        self.current_user, self.logged_in = "", False
+        
+        # Clear any existing widgets
+        for widget in self.winfo_children():
+            widget.destroy()
+        
+        # Recreate the initial login UI
+        self.welcome_label = customtkinter.CTkLabel(self, text="Welcome! Please log in.", 
+                                                font=("Arial", 18, "bold"))
+        self.welcome_label.pack(side="top", pady=10)
+        self.show_login_button()
+        
+        # Reset references
         self.main_frame1 = None 
         self.main_frame2 = None
-        self.show_login_button()
+        self.main_container = None
+        self.last_frame = None
         
 
 
     def update_ui(self, username):
         """Update the main window after a successful login."""
-        self.label.destroy()
+        self.welcome_label.destroy()
 
         # self.util.username = self.current_user
 

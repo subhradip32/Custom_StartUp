@@ -297,7 +297,7 @@ class App(customtkinter.CTk):
         self.main_frame2.pack(side="left", fill="both")
 
         # Your textbox inside main_frame1
-        self.script_textbox = customtkinter.CTkTextbox(master=self.main_frame1, font=("arial", 14), fg_color="black")
+        self.script_textbox = customtkinter.CTkTextbox(master=self.main_frame1,text_color='white' ,font=("arial", 14), fg_color="black")
         self.script_textbox.pack(side="top", padx=10, pady=10, expand=True, fill="both")
 
         # Init utility
